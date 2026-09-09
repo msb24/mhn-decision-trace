@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>★ MHN Decision Trace</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="app-header">
+      <div>
+        <div class="eyebrow">MPIM 6740 · Module 3 · Student-created prototype</div>
+        <h1>★ MHN Decision Trace</h1>
+        <p class="subtitle">A pre-deployment audit prototype for one simulated prior authorization decision.</p>
+      </div>
+      <div class="header-badge">
+        <span class="dot red"></span>
+        <div>
+          <strong>Current gate</strong>
+          <span id="headerGate">HOLD</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="disclaimer">
+      <strong>Simulated data only.</strong> No real patient information is shown. Scenario facts are drawn from the MHN course packets.
+    </div>
+
+    <nav class="stepper" aria-label="Prototype screens">
+      <button class="step active" data-screen="request"><span>1</span>Request</button>
+      <button class="step" data-screen="source"><span>2</span>Source Trace</button>
+      <button class="step" data-screen="integrity"><span>3</span>Decision Integrity</button>
+      <button class="step" data-screen="governance"><span>4</span>Governance</button>
+      <button class="step" data-screen="gate"><span>5</span>Deployment Gate</button>
+    </nav>
+
+    <main>
+      <section id="request" class="screen active-screen">
+        <div class="screen-heading">
+          <div>
+            <div class="kicker">Simulated request</div>
+            <h2>Can MHN reconstruct this decision?</h2>
+          </div>
+          <span class="status-pill hold">HOLD</span>
+        </div>
+
+        <div class="grid two">
+          <article class="card">
+            <h3>Request snapshot</h3>
+            <dl class="detail-list">
+              <div><dt>Request ID</dt><dd>SIM-PA-00417</dd></div>
+              <div><dt>Facility</dt><dd>MHN Hospital 4</dd></div>
+              <div><dt>Payor</dt><dd>BlueCross</dd></div>
+              <div><dt>Request type</dt><dd>Simulated outpatient authorization</dd></div>
+              <div><dt>Current AI output</dt><dd><span class="tag amber">Escalate</span></dd></div>
+              <div><dt>Human review</dt><dd>Required for Escalate</dd></div>
+            </dl>
+          </article>
+
+          <article class="card emphasis-card">
+            <h3>Why this trace exists</h3>
+            <p>A readiness score can look abstract. This prototype stress-tests one decision against the exact controls MHN would need to defend it later.</p>
+            <div class="mini-checks">
+              <div><span>✓</span> Can we trace the source record?</div>
+              <div><span>✓</span> Can we identify the payor rule used?</div>
+              <div><span>?</span> Does the historical label mean the same thing across hospitals?</div>
+              <div><span>?</span> Can MHN prove who owned the data and what happened after the model ran?</div>
+            </div>
+          </article>
+        </div>
+
+        <div class="callout">
+          <strong>Audit logic:</strong> if one required trace field is missing, MHN should treat the decision as not fully deployment-ready.
+        </div>
+      </section>
+
+      <section id="source" class="screen">
+        <div class="screen-heading">
+          <div>
+            <div class="kicker">Source trace</div>
+            <h2>Where did the decision evidence come from?</h2>
+          </div>
+          <span class="status-pill hold">2 open issues</span>
+        </div>
+
+        <div class="trace-stack">
+          <div class="trace-row pass">
+            <div class="icon">✓</div>
+            <div>
+              <strong>Epic record found</strong>
+              <p>Clinical source is available through MHN's FHIR-enabled Epic environment.</p>
+            </div>
+            <span class="micro">PASS</span>
+          </div>
+
+          <div class="trace-row warn">
+            <div class="icon">!</div>
+            <div>
+              <strong>BlueCross criteria found through manual PDF ingestion</strong>
+              <p>No API is available and formatting can change between quarterly releases.</p>
+            </div>
+            <span class="micro">WATCH</span>
+          </div>
+
+          <div class="trace-row fail">
+            <div class="icon">×</div>
+            <div>
+              <strong>MHN owner for ingested payor data</strong>
+              <p>Ownership has not been assigned after external criteria enter MHN's environment.</p>
+            </div>
+            <span class="micro">FAIL</span>
+          </div>
+
+          <div class="trace-row warn">
+            <div class="icon">!</div>
+            <div>
+              <strong>Version trace</strong>
+              <p>Prototype requires source, retrieval date, policy version, and transformation history for every payor rule used.</p>
+            </div>
+            <span class="micro">REQUIRED</span>
+          </div>
+        </div>
+
+        <div class="why-box">
+          <strong>Why it matters:</strong> provenance answers “which rule did the AI rely on?” If that answer cannot be reconstructed, a written rationale can look precise while still pointing to the wrong or stale source.
+        </div>
+      </section>
+
+      <section id="integrity" class="screen">
+        <div class="screen-heading">
+          <div>
+            <div class="kicker">Decision integrity</div>
+            <h2>Does “Escalate” mean one thing across MHN?</h2>
+          </div>
+          <span class="status-pill danger">FAIL</span>
+        </div>
+
+        <div class="grid two">
+          <article class="card">
+            <h3>Historical label consistency</h3>
+            <div class="big-risk">
+              <span class="risk-icon">!</span>
+              <div>
+                <strong>Label collision detected</strong>
+                <p>MHN's packet says reviewer escalation criteria differ across facilities.</p>
+              </div>
+            </div>
+            <p class="muted">The same simulated clinical facts can inherit different historical outcomes depending on the hospital that handled them.</p>
+            <button class="primary-btn" id="collisionBtn">View Label Collision</button>
+          </article>
+
+          <article class="card">
+            <h3>Bias watch</h3>
+            <div class="metric-row"><span>Pediatric representation</span><strong class="bad-text">Thin</strong></div>
+            <div class="metric-row"><span>Rural-serving hospitals</span><strong class="bad-text">Underrepresented</strong></div>
+            <div class="metric-row"><span>Facility denial patterns</span><strong class="warn-text">Variable</strong></div>
+            <div class="metric-row"><span>Subgroup test standard</span><strong class="bad-text">Not yet defined</strong></div>
+            <p class="footnote">Huyen (2025) emphasizes consistent annotation guidelines; inconsistent labels make learning harder.</p>
+          </article>
+        </div>
+
+        <div id="collisionPanel" class="collision-panel hidden">
+          <div class="collision-title">
+            <div>
+              <div class="kicker">Same simulated case · same evidence</div>
+              <h3>Different historical answer</h3>
+            </div>
+            <button class="ghost-btn" id="closeCollision">Close</button>
+          </div>
+
+          <div class="collision-grid">
+            <div class="hospital-card approve">
+              <span>Hospital 2</span>
+              <strong>APPROVE</strong>
+              <small>Historical workflow outcome</small>
+            </div>
+            <div class="versus">≠</div>
+            <div class="hospital-card escalate">
+              <span>Hospital 6</span>
+              <strong>ESCALATE</strong>
+              <small>Historical workflow outcome</small>
+            </div>
+          </div>
+
+          <div class="collision-explain">
+            <strong>What the model “sees”:</strong> two labels for equivalent evidence. Before using historical decisions for training or evaluation, MHN needs one network-wide definition of Approve, Deny, and Escalate.
+          </div>
+        </div>
+      </section>
+
+      <section id="governance" class="screen">
+        <div class="screen-heading">
+          <div>
+            <div class="kicker">Compliance + governance</div>
+            <h2>Can MHN legally and operationally defend this decision?</h2>
+          </div>
+          <span class="status-pill hold">4 open controls</span>
+        </div>
+
+        <div class="control-grid">
+          <article class="control pass">
+            <span class="control-label">Access</span>
+            <h3>Role-based access control</h3>
+            <p>Clinical access controls already exist.</p>
+            <strong>PASS</strong>
+          </article>
+
+          <article class="control fail">
+            <span class="control-label">Vendor processing</span>
+            <h3>AI-specific BAA coverage</h3>
+            <p>Existing enterprise BAA covers de-identified processing only.</p>
+            <strong>OPEN</strong>
+          </article>
+
+          <article class="control pass">
+            <span class="control-label">Residency</span>
+            <h3>U.S. PHI restriction</h3>
+            <p>PHI must not transmit outside the United States.</p>
+            <strong>DEFINED</strong>
+          </article>
+
+          <article class="control fail">
+            <span class="control-label">Logging</span>
+            <h3>AI inference log standard</h3>
+            <p>Current packet says AI inference logging requirements are not specified.</p>
+            <strong>OPEN</strong>
+          </article>
+
+          <article class="control fail">
+            <span class="control-label">Retention</span>
+            <h3>5 years → 7 years</h3>
+            <p>Current audit retention is two years short of the AI decision requirement.</p>
+            <strong>OPEN</strong>
+          </article>
+
+          <article class="control warn">
+            <span class="control-label">Network</span>
+            <h3>CISO cross-segment review</h3>
+            <p>Required when data crosses MHN's clinical and administrative network boundary.</p>
+            <strong>REQUIRED</strong>
+          </article>
+        </div>
+      </section>
+
+      <section id="gate" class="screen">
+        <div class="screen-heading">
+          <div>
+            <div class="kicker">Deployment gate</div>
+            <h2>Readiness decision</h2>
+          </div>
+          <span class="status-pill hold" id="gatePill">HOLD</span>
+        </div>
+
+        <div class="gate-layout">
+          <article class="score-card">
+            <div class="score-number" id="scoreNumber">10<span>/20</span></div>
+            <div class="score-copy">
+              <strong id="scoreLabel">Address gaps before proceeding</strong>
+              <p id="scoreSub">At the bottom of the worksheet's 10–15 caution band.</p>
+            </div>
+          </article>
+
+          <article class="card">
+            <h3>Dimension scores</h3>
+            <div class="bars">
+              <div><span>Data completeness + accuracy</span><b>2/5</b></div>
+              <div><span>Bias + fairness controls</span><b>2/5</b></div>
+              <div><span>Regulatory compliance</span><b>3/5</b></div>
+              <div><span>Governance infrastructure</span><b>3/5</b></div>
+            </div>
+          </article>
+        </div>
+
+        <article class="card preconditions">
+          <div class="pre-head">
+            <div>
+              <div class="kicker">Preconditions</div>
+              <h3>What must clear before pilot approval?</h3>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="remediationToggle">
+              <span class="slider"></span>
+              <span class="toggle-label">Simulate remediation</span>
+            </label>
+          </div>
+
+          <div class="condition-list">
+            <div class="condition" data-remediable><span class="cond-icon">×</span><div><strong>Standardize Approve / Deny / Escalate labels</strong><small>One network-wide decision definition before historical label extraction.</small></div></div>
+            <div class="condition" data-remediable><span class="cond-icon">×</span><div><strong>Execute AI-specific BAA terms</strong><small>Cover live PHI inference and required subprocessors.</small></div></div>
+            <div class="condition" data-remediable><span class="cond-icon">×</span><div><strong>Name an MHN owner for ingested payor data</strong><small>Accountability continues after external data enters MHN.</small></div></div>
+            <div class="condition" data-remediable><span class="cond-icon">×</span><div><strong>Define inference logging + seven-year retention</strong><small>Every AI decision should be reconstructable for the required retention period.</small></div></div>
+          </div>
+        </article>
+
+        <div class="gate-banner hold-banner" id="gateBanner">
+          <div>
+            <strong>Current decision: HOLD</strong>
+            <span>Continue readiness work, but do not treat the current data layer as ready for unrestricted deployment.</span>
+          </div>
+          <button class="secondary-btn" onclick="window.print()">Print audit snapshot</button>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div><strong>★ Student-created applied artifact</strong> · MHN Data Readiness Audit</div>
+      <div>Course scenario sources: MHN Module 3 Data Readiness Audit Worksheet, MHN Master Reference, Module 1 RFP, Huyen (2025).</div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
