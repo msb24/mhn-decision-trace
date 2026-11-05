@@ -1,43 +1,40 @@
-★ MHN Decision Trace Prototype
-MPIM 6740 AI Application Integration · Module 3
+# MHN Decision Trace
 
-WHAT IT IS
-A student-created, clickable pre-deployment audit artifact using only simulated request data.
-It turns the Module 3 readiness findings into an interactive decision trace and includes an
-embedded "Label Collision" diagnostic.
+**Healthcare AI decision provenance and pre-deployment control prototype**
 
-HOW TO OPEN
-1. Unzip the folder.
-2. Double-click index.html.
-3. Use the five navigation buttons across the top.
-4. On Decision Integrity, click "View Label Collision."
-5. On Deployment Gate, toggle "Simulate remediation" to show the hypothetical future state.
+[Explore the live demonstration](https://mhn-decision-trace.vercel.app/)
 
-HOW TO DEPLOY
-This is a static site. You can upload the folder to GitHub Pages, Vercel, Netlify, or another static host.
-No backend or database is required.
+## Problem addressed
 
-EXACT STARRED PARAGRAPH FOR YOUR PAPER
-★ Applied artifact. I built an MHN Decision Trace prototype to test whether one simulated prior
-authorization decision could be reconstructed from source data through audit review. The prototype
-requires a traceable source record, payor-policy provenance, a consistent decision label, vendor
-processing authority, an AI inference log, and the required retention period. I embedded a Label
-Collision diagnostic because MHN's historical meaning of “Escalate” differs across facilities. If one
-of these checks fails, the prototype holds the decision at the readiness gate rather than treating a
-complete-looking record as deployment-ready.
+For a simulated prior-authorization decision to be auditable, the organization needs more than a plausible model output. It must be able to reconstruct the source information, applicable policy, decision label, responsible owners, model-processing authority, and review trail.
 
-SUGGESTED FIGURE CAPTION
-Figure 1. ★ MHN Decision Trace prototype. A simulated prior authorization request is followed
-through source provenance, label consistency, compliance, and audit controls. The built-in Label
-Collision diagnostic demonstrates how the same simulated evidence can inherit different historical
-labels when hospital definitions are inconsistent.
+## My applied artifact
 
-COURSE-FACT BASIS
-- MHN Module 3 Data Readiness Audit Worksheet
-- MHN Master Reference
-- Module 1 Vendor Packet / RFP
-- Huyen (2025), Chapter 8 Dataset Engineering
-- Kershner Module 3 expert commentary
+Built an interactive, student-created demonstration with sections for request data, evidence provenance, decision integrity, governance, and the deployment gate. The scenario deliberately surfaces failure modes that could be hidden by an aggregate readiness score.
 
-IMPORTANT
-The prototype is a simulation and contains no real patient information.
+### Controls demonstrated
+
+- Clinical-source traceability through a simulated Epic/FHIR workflow.
+- Payer-policy provenance, retrieval date, versioning, and transformation history.
+- Label collision when two facilities interpret the same simulated evidence differently.
+- Vendor processing authority and AI-specific contractual coverage.
+- Audit event completeness and a seven-year retention requirement specified by the course scenario.
+- Governance ownership and required clinical-to-administrative network review.
+
+## How to use the prototype
+
+1. Open the live demo.
+2. Review the simulated request snapshot.
+3. Open Source Trace to inspect provenance and missing ownership.
+4. Select Decision Integrity and trigger the Label Collision diagnostic.
+5. Review Governance, then inspect the remediation simulation in Deployment Gate.
+
+## Why I designed it this way
+
+The interface converts a checklist into a decision trace. A reviewer can see what evidence is missing, what action is required, and why the simulated system should remain on hold.
+
+## Technology and boundaries
+
+Static HTML/CSS/JavaScript prototype deployed on Vercel. It demonstrates requirements and decision logic but does not connect to Epic, a payer API, an AI inference service, or a production audit database. No real patient data is used.
+
+**Designed by Maya Kalantari | Georgetown University**
